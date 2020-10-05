@@ -1,0 +1,42 @@
+<!-- templates/index.html -->
+<html>
+  <head>
+    <title>Flask Geolocation App 1.0</title>
+  </head>
+  <body>
+    <h1>Flask Geolocation App 1.0</h1>
+    <p id="output"></p>
+    <script type="text/javascript">
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = response
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(getClosest);
+        }
+        function getClosest(position) {
+            var data = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+            }
+            post(data)
+        }
+        function post(data) {
+            xhr.open("POST", 'http://localhost:5000/locations', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+        }
+        function response() {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                var data = JSON.parse(this.responseText);
+                document.querySelector('#output').innerText = `
+The closest pharmacy is:
+${data.name}
+${data.address}
+${data.distance} Miles away
+`
+            }
+        }
+    </script>
+  </body>
+</html>
